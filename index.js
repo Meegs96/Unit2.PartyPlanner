@@ -43,5 +43,4 @@ async function getEvents() {
         <p>${event.location}</p>
       `;
     })
-    eventList.replaceChildren(...eventCards);
   }
