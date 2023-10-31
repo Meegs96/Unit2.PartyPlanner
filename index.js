@@ -5,7 +5,72 @@ const state =  {
   events: [],
 }
 
-const eventList = document.querySelector ("#events")
+const partyList = document.getElementById("party-list");
+const partyForm = document.getElementById("party-form");
+
+async function createEvent(event) {
+  event.preventDefault();
+  
+  
+  try {
+    const response = await fetch(API_URL + "/events", {
+      method: "POST",
+      headers: {'Content-type': 'application/json'},
+      body: JSON.stringify({
+        name: document.getElementById("name").value,
+        description: document.getElementById("description").value,
+        date: `${document.getElementById("date").value}:00.000Z`,
+        location: document.getElementById("location").value,
+      })
+    });
+    getEvents();
+  } catch(err) {
+    console.error(err);
+  }
+}
+
+async function getEvents() {
+  try {
+    const response = await fetch(API_URL + "/events");
+    const json = await response.json();
+    state.events = json.data;
+    render();
+
+  } catch(err) {
+    console.error(err);
+  }
+}
+
+function render() {
+  const events = state.events.map((event) => {
+    const article = document.createElement("article");
+    deleteBtn.innerText = "X"
+    deleteBtn.addEventListener("click", async() => {
+      try{
+        const response = await fetch(API_URL + `/events/${event.id}`, {
+          method: "DELETE"
+        });
+        console.log("deleted!")
+        getEvents();
+      } catch(err) {
+        console.error(err);
+      }
+
+    });
+    article.innerHTML = `
+    <h3>${event.name}</h3
+    <address>${event.location}</address>`
+    article.append(deleteBtn);
+
+    return article;
+
+  });
+  PartyList.replaceChildren(...events);
+}
+
+getEvents();
+
+/*const eventList = document.querySelector ("#events")
 
 const addEventsForm = document.querySelector ("#addEvent")
 
@@ -44,3 +109,4 @@ async function getEvents() {
       `;
     })
   }
+  */
